@@ -1,10 +1,13 @@
 import { useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import jsQR from 'jsqr';
+import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function QRScanner({ onScan }) {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -30,18 +33,21 @@ export default function QRScanner({ onScan }) {
 
   return (
     <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <button onClick={() => navigate("/home")}>Regresar</button>
+      <p>Escanea tu QR 📷</p>
       <Webcam
         audio={false}
         ref={webcamRef}
         screenshotFormat="image/png"
         videoConstraints={{
-           facingMode: 'environment' ,
-           width: {ideal: 1280}, //aumenta resolucion
-           height: { ideal: 720}
+          facingMode: 'environment' ,
+          width: {ideal: 1280}, //aumenta resolucion
+          height: { ideal: 720}
           }} // 🔥 Cámara trasera
         style={{ width: '100%' }}
       />
       <canvas ref={canvasRef} style={{ display: 'none' }}></canvas> {/* 🔥 Canvas oculto para procesar frames */}
+      
     </div>
   );
 }

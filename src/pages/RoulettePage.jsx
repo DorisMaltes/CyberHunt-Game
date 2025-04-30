@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { useSearchParams } from "react-router-dom";
-
+import { SpinWheel } from "react-spin-wheel";
+import "react-spin-wheel/dist/index.css";
 
 export default function RoulettePage() {
     const auth = getAuth();
@@ -15,91 +15,81 @@ export default function RoulettePage() {
 
     const [alreadyPlayed, setAlreadyPlayed] = useState(false);
     const [result, setResult] = useState(null);
-    const [spinning, setSpinning] = useState(false);
 
-    const possibleResults = [10, 5, -5, -10];
+  // 🔥 Los posibles resultados que aparecerán en la ruleta visual
+    const possibleResults = ["+10", "+5", "-5", "-10"];
 
-    useEffect(() => {
-    const checkProgress = async () => {
+    useEffect(() => 
+    {
+        const checkProgress = async () => {
         if (!userId) return;
 
-        const progressRef = doc(db, "users", userId, "user_booth_progress", boothId);
-        const progressSnap = await getDoc(progressRef);
-
+            const progressRef = doc(db, "users", userId, "user_booth_progress", boothId);
+            const progressSnap = await getDoc(progressRef);
         if (progressSnap.exists()) {
             setAlreadyPlayed(true);
             setResult(progressSnap.data().score_obtained);
-    }
-    };
+        }
+        };
 
-    checkProgress();
-    }, [userId]);
+        checkProgress();
+    }, [userId, boothId]);
 
-  const handleSpin = async () => {
-    setSpinning(true);
-    const randomIndex = Math.floor(Math.random() * possibleResults.length);
-    const prize = possibleResults[randomIndex];
-    setTimeout(() => {
-      setResult(prize);
-      setSpinning(false);
-      saveResult(prize);
-    }, 2000); // Simula tiempo de giro
-  };
-
-  const saveResult = async (prize) => {
+    const saveResult = async (prizeStr) => {
+    const prize = parseInt(prizeStr); // convertir "+10" o "-5" a número
     const userRef = doc(db, "users", userId);
     const progressRef = doc(db, "users", userId, "user_booth_progress", boothId);
 
     try {
-      await setDoc(progressRef, {
+    await setDoc(progressRef, {
         booth_id: boothId,
         score_obtained: prize,
-        visited: true
-      });
+        visited: true,
+        });
 
-      const userSnap = await getDoc(userRef);
-      if (userSnap.exists()) {
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
         const userData = userSnap.data();
         const newScore = (userData.score || 0) + prize;
         const visitedBooths = userData.visited_booths || [];
         const updatedVisitedBooths = visitedBooths.includes(boothId)
-          ? visitedBooths
-          : [...visitedBooths, boothId];
+        ? visitedBooths
+        : [...visitedBooths, boothId];
 
         await updateDoc(userRef, {
-          score: newScore,
-          visited_booths: updatedVisitedBooths
+            score: newScore,
+            visited_booths: updatedVisitedBooths,
         });
-      }
-    } catch (error) {
-      console.error("Error guardando resultado de la ruleta:", error);
     }
-  };
 
-  return (
-    <div style={{ textAlign: "center", padding: "2rem" }}>
-      <h1>🎰 ¡Gira la ruleta!</h1>
+      setResult(prize); // Mostrar el resultado
+      setAlreadyPlayed(true); // Marcar como jugado
+    } catch (error) {
+        console.error("Error guardando resultado de la ruleta:", error);
+    }
+};
 
-      {alreadyPlayed ? (
+    return (
+        <div style={{ textAlign: "center", padding: "2rem" }}>
+        <h1>🎰 ¡Gira la ruleta!</h1>
+
+        {alreadyPlayed ? (
         <>
-          <p>Ya jugaste este booth.</p>
-          <h2>Resultado anterior: {result > 0 ? `+${result}` : result} puntos</h2>
+            <p>Ya jugaste este booth.</p>
+            <h2>Resultado: {result > 0 ? `+${result}` : result} puntos</h2>
+            <button onClick={() => navigate("/home")}>Volver al Home</button>
         </>
-      ) : spinning ? (
-        <p>🎡 Girando...</p>
-      ) : result !== null ? (
+        ) : (
         <>
-          <h2>¡Resultado!: {result > 0 ? `+${result}` : result} puntos</h2>
-          <button onClick={() => navigate("/home")}>Volver al Home</button>
+            <p>Haz clic en la ruleta para girar</p>
+            <div style={{ maxWidth: "400px", margin: "0 auto" }}>
+            <SpinWheel
+                items={possibleResults}
+                onFinishSpin={(item) => saveResult(item)}
+            />
+        </div>
         </>
-      ) : (
-        <button
-          onClick={handleSpin}
-          style={{ fontSize: "1.5rem", padding: "1rem 2rem" }}
-        >
-          Gira 🎯
-        </button>
-      )}
+    )}
     </div>
-  );
+    );
 }

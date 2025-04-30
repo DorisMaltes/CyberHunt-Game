@@ -58,6 +58,7 @@ export default function QRPage() {
       ) : (
         <p>QR escaneado: {scannedData}</p>
       )}
+      <button onClick={() => navigate("/home")}>Regresar Home</button>
     </div>
   );
 }
