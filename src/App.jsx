@@ -8,6 +8,10 @@ import Home from "./pages/Home";
 import Login from "./pages/LogIn";
 import QRPage from "./pages/QRPage";
 import QuizPage from "./pages/Quizpage";
+import GamePage from "./pages/GamePage";
+import Leaderboard from "./pages/Leaderboard";
+import RoulettePage from "./pages/RoulettePage";
+
 
 
 function App() {
@@ -22,6 +26,9 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/qr" element={<QRPage />} />
         <Route path="/quiz" element={<QuizPage />} /> {/* 🔥 Nueva ruta */}
+        <Route path="/game" element={<GamePage />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/random/roulette" element={<RoulettePage />} />
       </Routes>
     </Router>
 

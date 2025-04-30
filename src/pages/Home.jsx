@@ -1,23 +1,53 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebaseConfig";
-import { collection, doc, setDoc } from "firebase/firestore"; 
-
-
+import { doc, getDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 function Home() {
-    const navigate = useNavigate();
+  const [userName, setUserName] = useState("");
+  const navigate = useNavigate();
+  const auth = getAuth();
+  const userId = auth.currentUser?.uid;
 
-    const goToQRPage = async () => {
-        navigate("/qr");
-    } ;
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!userId) return;
+      const userRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userRef);
 
-    return(
-    <div >
-        <h1>HOLA</h1>
-        <button onClick={goToQRPage}>Escanea un QR 📷</button>
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        setUserName(userData.name || "Jugador");
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
+
+
+
+  return (
+    <div style={{ textAlign: "center", padding: "2rem" }}>
+      <h1>¡Hola, {userName}! 👋</h1>
+
+      <div style={{ marginTop: "2rem" }}>
+        <button
+          onClick={() => navigate("/qr")}
+          style={{ fontSize: "1.2rem", padding: "1rem", marginRight: "1rem" }}
+        >
+          Escanea un QR 📷
+        </button>
+
+        <button
+          onClick={() => navigate("/leaderboard")}
+          style={{ fontSize: "1.2rem", padding: "1rem" }}
+        >
+          Ver Leaderboard 🏆
+        </button>
+      </div>
     </div>
-    );
+  );
 }
 
-export default Home
+export default Home;
