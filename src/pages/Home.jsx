@@ -3,6 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import Popup from "reactjs-popup";
+import 'reactjs-popup/dist/index.css';
+import { CCarousel, CCarouselCaption, CCarouselItem, CImage } from '@coreui/react';
+import '@coreui/coreui/dist/css/coreui.min.css'
+
+
+
+
 
 function Home() {
   const [userName, setUserName] = useState("");
@@ -52,6 +60,53 @@ function Home() {
           Ver Leaderboard 🏆
         </button>
       </div>
+
+      <Popup trigger=
+          {<button> What is CyberHunt? </button>} 
+          modal nested>
+            {
+              close => (
+                <div className='modal'>
+                  <div className='content'>
+                      Welcome to GFG!!!
+                      holiwis
+                      
+                  </div>
+                  <div>
+                      <button onClick=
+                        {() => close()}>
+                            Close modal
+                      </button>
+                  </div>
+                </div>
+                    )
+                }
+      </Popup>
+
+      <CCarousel controls indicators>
+                        <CCarouselItem>
+                          <CImage className="d-block w-100" src="/src/assets/images/react.jpg" alt="slide 1" />
+                          <CCarouselCaption className="d-none d-md-block">
+                            <h5>First slide label</h5>
+                            <p>Some representative placeholder content for the first slide.</p>
+                          </CCarouselCaption>
+                        </CCarouselItem>
+                        <CCarouselItem>
+                          <CImage className="d-block w-100" src="/src/assets/images/react.jpg" alt="slide 2" />
+                          <CCarouselCaption className="d-none d-md-block">
+                            <h5>Second slide label</h5>
+                            <p>Some representative placeholder content for the first slide.</p>
+                          </CCarouselCaption>
+                        </CCarouselItem>
+                        <CCarouselItem>
+                          <CImage className="d-block w-100" src="/src/assets/images/react.jpg" alt="slide 3" />
+                          <CCarouselCaption className="d-none d-md-block">
+                            <h5>Third slide label</h5>
+                            <p>Some representative placeholder content for the first slide.</p>
+                          </CCarouselCaption>
+                        </CCarouselItem>
+                      </CCarousel>
+
     </div>
   );
 }
