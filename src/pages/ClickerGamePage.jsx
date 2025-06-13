@@ -5,15 +5,15 @@ import { getAuth } from "firebase/auth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 export default function ClickerGamePage({ boothId }) {
-  const auth = getAuth();
-  const userId = auth.currentUser?.uid;
-  const navigate = useNavigate();
+    const auth = getAuth();
+    const userId = auth.currentUser?.uid;
+    const navigate = useNavigate();
 
-  const [alreadyPlayed, setAlreadyPlayed] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(10);
-  const [gameFinished, setGameFinished] = useState(false);
+    const [alreadyPlayed, setAlreadyPlayed] = useState(false);
+    const [gameStarted, setGameStarted] = useState(false);
+    const [score, setScore] = useState(0);
+    const [timeLeft, setTimeLeft] = useState(10);
+    const [gameFinished, setGameFinished] = useState(false);
 
   useEffect(() => {
     const checkProgress = async () => {
